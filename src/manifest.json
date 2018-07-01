@@ -1,0 +1,10 @@
+{
+  "name": "SMWS Distllery Code Display",
+  "description": "ザ・スコッチモルトウイスキー・ソサエティオンラインショップの蒸留所名を表示します。",
+  "version": "0.1",
+  "manifest_version": 2,
+  "content_scripts": [{
+    "matches": ["https://shop.smwsjapan.com/*"],
+    "js": ["jquery-3.3.1.slim.min.js", "content.js"]
+  }]
+}
