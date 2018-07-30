@@ -158,7 +158,7 @@
     map.set("B4", "FEW Spirits");
     map.set("B5", "Cascade Hollow");
 
-    var regExp = new RegExp("^\\n?.*? *(.?\\d+)\\.\\d+ *");
+    var regExp = new RegExp("^\\n?.*? *(.?\\d+)\\.\\d+[ 　]*");
     $("body :not(:has(*))").each(function() {
     var matched = $(this).text();
         if (matched.match(regExp)) {
