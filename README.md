@@ -1,4 +1,4 @@
-# SMWS-Distllery-Code-Display
+# SMWS-Distillery-Code-Display
 Chrome extension that displays the distillery name of The Scotch Malt Whiskey Society Online Shop.
 
 ## Description
