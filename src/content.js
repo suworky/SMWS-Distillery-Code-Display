@@ -1,171 +1,302 @@
-﻿$(function () {
+/**
+ * SMWS Distillery Code Display - content script
+ *
+ * ページ内のSMWSボトルコード（例: 29.273, G1.12, B3.4）を検出し、
+ * 蒸留所名をインラインバッジまたはホバーツールチップとして表示する。
+ *
+ * 対応サイト: smwsjapan.com / smws.com / smwsamerica.com
+ */
 
-    // 蒸留所コード一覧
-    var map = new Map();
-    map.set("1", "Glenfarclas");
-    map.set("2", "Glenlivet");
-    map.set("3", "Bowmore");
-    map.set("4", "Highland Park");
-    map.set("5", "Auchentoshan");
-    map.set("6", "Glen Deveron (Macduff)");
-    map.set("7", "Longmorn");
-    map.set("8", "Tamdhu");
-    map.set("9", "Glen Grant");
-    map.set("10", "Bunnahabhain");
-    map.set("11", "Tomatin");
-    map.set("12", "Benriach");
-    map.set("13", "Dalmore");
-    map.set("14", "Talisker");
-    map.set("15", "Glenfiddich");
-    map.set("16", "Glenturret");
-    map.set("17", "Scapa");
-    map.set("18", "Inchgower");
-    map.set("19", "Glen Garioch");
-    map.set("20", "Inverleven");
-    map.set("21", "Glenglassaugh");
-    map.set("22", "Glenkinchie");
-    map.set("23", "Bruichladdich");
-    map.set("24", "Macallan");
-    map.set("25", "Rosebank");
-    map.set("26", "Clynelish");
-    map.set("27", "Springbank");
-    map.set("28", "Tullibardine");
-    map.set("29", "Laphroaig");
-    map.set("30", "Glenrothes");
-    map.set("31", "Isle of Jura");
-    map.set("32", "Edradour");
-    map.set("33", "Ardbeg");
-    map.set("34", "Tamnavulin");
-    map.set("35", "Glen Moray");
-    map.set("36", "Benrinnes");
-    map.set("37", "Cragganmore");
-    map.set("38", "Caperdonich");
-    map.set("39", "Linkwood");
-    map.set("40", "Balvenie");
-    map.set("41", "Dailuaine");
-    map.set("42", "Ledaig (Tobermory)");
-    map.set("43", "Port Ellen");
-    map.set("44", "Craigellachie");
-    map.set("45", "Dallas Dhu");
-    map.set("46", "Glenlossie");
-    map.set("47", "Benromach");
-    map.set("48", "Balmenach");
-    map.set("49", "St. Magdalene");
-    map.set("50", "Bladnoch");
-    map.set("51", "Bushmills");
-    map.set("52", "Old Pulteney");
-    map.set("53", "Caol Ila");
-    map.set("54", "Aberlour");
-    map.set("55", "Royal Brackla");
-    map.set("56", "Coleburn");
-    map.set("57", "Glen Mhor");
-    map.set("58", "Strathisla");
-    map.set("59", "Teaninich");
-    map.set("60", "Aberfeldy");
-    map.set("61", "Brora");
-    map.set("62", "Glenlochy");
-    map.set("63", "Glentauchers");
-    map.set("64", "Mannochmore");
-    map.set("65", "Imperial");
-    map.set("66", "Ardmore");
-    map.set("67", "Banff");
-    map.set("68", "Blair Athol");
-    map.set("69", "Glen Albyn");
-    map.set("70", "Balblair");
-    map.set("71", "Glenburgie");
-    map.set("72", "Miltonduff");
-    map.set("73", "Aultmore");
-    map.set("74", "North Port");
-    map.set("75", "Glenury-Royal");
-    map.set("76", "Mortlach");
-    map.set("77", "Glen Ord");
-    map.set("78", "Ben Nevis");
-    map.set("79", "Deanston");
-    map.set("80", "Glen Spey");
-    map.set("81", "Glen Keith");
-    map.set("82", "Glencadam");
-    map.set("83", "Convalmore");
-    map.set("84", "Glendullan");
-    map.set("85", "Glen Elgin");
-    map.set("86", "Glenesk");
-    map.set("87", "Millburn");
-    map.set("88", "Speyburn");
-    map.set("89", "Tomintoul");
-    map.set("90", "Pittyvaich");
-    map.set("91", "Dufftown");
-    map.set("92", "Lochside");
-    map.set("93", "Glen Scotia");
-    map.set("94", "Old Fettercairn");
-    map.set("95", "Auchroisk (Singleton)");
-    map.set("96", "Glendronach");
-    map.set("97", "Littlemill");
-    map.set("98", "Lomond (Inverleven)");
-    map.set("99", "Glenugie");
-    map.set("100", "Strathmill");
-    map.set("101", "Knockando");
-    map.set("102", "Dalwhinnie");
-    map.set("103", "Royal Lochnagar");
-    map.set("104", "Glencraig (Glenburgie)");
-    map.set("105", "Tormore");
-    map.set("106", "Cardhu");
-    map.set("107", "Glenallachie");
-    map.set("108", "Allt-a-Bhainne");
-    map.set("109", "Mosstowie (Miltonduff)");
-    map.set("110", "Oban");
-    map.set("111", "Lagavulin");
-    map.set("112", "Loch Lomond (Inchmurrin)");
-    map.set("113", "Braes of Glenlivet (Braeval)");
-    map.set("114", "Longrow (Springbank)");
-    map.set("115", "An Cnoc (Knockdhu)");
-    map.set("116", "Yoichi");
-    map.set("117", "Cooley (unpeated)");
-    map.set("118", "Cooley (peated)");
-    map.set("119", "Yamazaki");
-    map.set("120", "Hakushu");
-    map.set("121", "Isle of Arran");
-    map.set("122", "Croftengea (Loch Lomond)");
-    map.set("123", "Glengoyne");
-    map.set("124", "Miyagikyo");
-    map.set("125", "Glenmorangie");
-    map.set("126", "Hazelburn (Springbank)");
-    map.set("127", "Port Charlotte (Bruichladdich)");
-    map.set("128", "Penderyn");
-    map.set("129", "Kilchoman");
-    map.set("130", "Chichibu");
-    map.set("131", "Hanyu");
-    map.set("132", "Karuizawa");
-    map.set("133", "Westland");
-    map.set("134", "Paul John");
-    map.set("135", "Loch Lomond Inchmoan");
-    map.set("G1", "North British");
-    map.set("G2", "Carsebridge");
-    map.set("G3", "Caledonian");
-    map.set("G4", "Cameronbridge");
-    map.set("G5", "Invergordon");
-    map.set("G6", "Port Dundas");
-    map.set("G7", "Girvan");
-    map.set("G8", "Cambus");
-    map.set("G9", "Loch Lomond");
-    map.set("G10", "Strathclyde");
-    map.set("G11", "Nikka Coffey Grain");
-    map.set("G12", "Nikka Coffey Malt");
-    map.set("G13", "Chita");
-    map.set("G14", "Dumbarton");
-    map.set("G15", "Loch Lomond");
-    map.set("B1", "Heaven Hill");
-    map.set("B2", "Bernheim");
-    map.set("B3", "Rock Town");
-    map.set("B4", "FEW Spirits");
-    map.set("B5", "Cascade Hollow");
+// ── 定数 ────────────────────────────────────────────────────────────────────
 
-    var regExp = new RegExp("^\\n?.*? *(.?\\d+)\\.\\d+[ 　]*");
-    $("body :not(:has(*))").each(function() {
-    var matched = $(this).text();
-        if (matched.match(regExp)) {
-            var code = matched.replace(regExp, '$1');
-            var name = map.get(code);
-            if (typeof name === "undefined") return;
-            $(this).html(matched+"<div style='color: blue'>"+name+"</div>");
+const BOTTLE_CODE_PATTERN = /(?:^|\s)(([BbGg]\d{1,2}|\d{1,3})[.．]\d+)(?:\s|$)/;
+const BADGE_CLASS = "smws-distillery-badge";
+
+const SITE_KEY_MAP = {
+  "smws.com":          "uk",
+  "smws.eu":           "eu",
+  "smwsa.com":         "usa",
+  "smws.ca":           "canada",
+  "smws.com.au":       "australia",
+  "smws.co.nz":        "nz",
+  "smws.ch":           "switzerland",
+  "smws.dk":           "denmark",
+  "smwssg.com":        "singapore",
+  "smws.com.tw":       "taiwan",
+  "smwskr.com":        "korea",
+  "smwsmalaysia.com":  "malaysia",
+  "smws.ph":           "philippines",
+  "th.smws.com":       "thailand",
+  "smws.co.za":        "southafrica",
+  "smws.mx":           "mexico",
+  "smws.vn":           "vietnam",
+  "smwsjapan.com":     "japan",
+  "shop.smwsjapan.com":"japan",
+};
+
+const DEFAULT_SETTINGS = {
+  enabled:      true,
+  uiLang:       "ja",
+  language:     "en",
+  displayStyle: "badge",
+  sites: {
+    japan: true,
+  },
+};
+
+// ── 現在の設定 ────────────────────────────────────────────────────────────────
+
+let currentSettings = { ...DEFAULT_SETTINGS };
+
+// ── サイト判定 ────────────────────────────────────────────────────────────────
+
+function getCurrentSiteKey() {
+  const host = location.hostname.replace(/^www\./, "");
+  return SITE_KEY_MAP[host] ?? null;
+}
+
+function isActive() {
+  if (!currentSettings.enabled) return false;
+  const siteKey = getCurrentSiteKey();
+  if (!siteKey) return false;
+  return currentSettings.sites[siteKey] ?? false;
+}
+
+// ── スタイル注入 ──────────────────────────────────────────────────────────────
+
+function injectStyles() {
+  if (document.getElementById(BADGE_CLASS)) return;
+  const style = document.createElement("style");
+  style.id = BADGE_CLASS;
+  style.textContent = `
+    /* ── インラインバッジ ── */
+    .${BADGE_CLASS} {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1e40af;
+      font-size: 0.75em;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 99px;
+      margin-left: 5px;
+      vertical-align: middle;
+      white-space: nowrap;
+      font-family: sans-serif;
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── ホバーツールチップ ── */
+    .${BADGE_CLASS}--tooltip-wrap {
+      display: inline-block;
+      position: relative;
+      margin-left: 4px;
+      vertical-align: middle;
+      --hover-opacity: 1; /* :root のCSS変数をこの要素以下で再定義して継承を遮断 */
+    }
+    .${BADGE_CLASS}--tooltip-icon {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #378ADD;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 15px;
+      font-family: sans-serif;
+      cursor: default;
+    }
+    /* ツールチップ本体は JS で body 直下に固定配置するため CSS では非表示のみ定義 */
+    #smws-tooltip-singleton {
+      position: fixed;
+      display: none;
+      background: #1e40af;
+      color: white;
+      font-size: 12px;
+      font-family: sans-serif;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      z-index: 2147483647;
+      pointer-events: none;
+    }
+    #smws-tooltip-singleton::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #1e40af;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// ── 蒸留所名の解決 ────────────────────────────────────────────────────────────
+
+/** @param {string} rawCode @returns {string | null} */
+function resolveDistilleryName(rawCode) {
+  const normalized = rawCode.trim().replace(/^([bgBG])/, (c) => c.toUpperCase());
+  const entry = DISTILLERIES[normalized];
+  if (!entry) return null;
+  return currentSettings.language === "ja" ? entry.ja : entry.en;
+}
+
+// ── バッジ / ツールチップ生成 ─────────────────────────────────────────────────
+
+// ── グローバルツールチップ（body直下に1つだけ・fixed配置） ─────────────────────
+
+function ensureTooltipSingleton() {
+  if (document.getElementById("smws-tooltip-singleton")) return;
+  const el = document.createElement("div");
+  el.id = "smws-tooltip-singleton";
+  document.body.appendChild(el);
+}
+
+/** @param {string} name @param {HTMLElement} icon */
+function showTooltip(name, icon) {
+  const tip = document.getElementById("smws-tooltip-singleton");
+  if (!tip) return;
+  tip.textContent = name;
+  tip.style.display = "block";
+
+  // アイコンの中央上に配置
+  const rect = icon.getBoundingClientRect();
+  const tipW = tip.offsetWidth;
+  tip.style.left = `${rect.left + rect.width / 2 - tipW / 2}px`;
+  tip.style.top  = `${rect.top - tip.offsetHeight - 8}px`;
+}
+
+function hideTooltip() {
+  const tip = document.getElementById("smws-tooltip-singleton");
+  if (tip) tip.style.display = "none";
+}
+
+/** @param {string} name @returns {HTMLElement} */
+function createIndicator(name) {
+  if (currentSettings.displayStyle === "tooltip") {
+    const wrap = document.createElement("span");
+    wrap.className = `${BADGE_CLASS}--tooltip-wrap`;
+    wrap.dataset.smwsBadge = "1";
+
+    const icon = document.createElement("span");
+    icon.className = `${BADGE_CLASS}--tooltip-icon`;
+    icon.textContent = "?";
+    icon.addEventListener("mouseenter", () => showTooltip(name, icon));
+    icon.addEventListener("mouseleave", hideTooltip);
+
+    wrap.appendChild(icon);
+    return wrap;
+  }
+
+  // バッジ（デフォルト）
+  const badge = document.createElement("span");
+  badge.className = BADGE_CLASS;
+  badge.dataset.smwsBadge = "1";
+  badge.textContent = name;
+  return badge;
+}
+
+// ── テキストノード処理 ────────────────────────────────────────────────────────
+
+/**
+ * バッジの挿入先となる要素と挿入位置を返す。
+ * テキストの親が <a> の場合は <a> の外側（後）に挿入する。
+ * それ以外はテキストノードの直後に挿入する。
+ *
+ * @param {Text} textNode
+ * @returns {{ target: Node, isBefore: boolean }}
+ *   target: insertAfter の対象ノード
+ */
+function resolveInsertionPoint(textNode) {
+  let node = textNode.parentElement;
+  // <a> タグを祖先に持つ場合、その <a> の直後を挿入先にする
+  while (node && node !== document.body) {
+    if (node.tagName === "A") return { target: node };
+    node = node.parentElement;
+  }
+  // <a> 以外はテキストノードの直後
+  return { target: textNode };
+}
+
+/** @param {Text} textNode */
+function processTextNode(textNode) {
+  const text = textNode.textContent ?? "";
+  const match = text.match(BOTTLE_CODE_PATTERN);
+  if (!match) return;
+
+  const name = resolveDistilleryName(match[2]);
+  if (!name) return;
+
+  const parent = textNode.parentElement;
+  if (!parent) return;
+
+  const { target } = resolveInsertionPoint(textNode);
+
+  // 挿入先の直後に既にバッジがあれば二重挿入しない
+  if (target.nextSibling?.dataset?.smwsBadge) return;
+
+  target.after(createIndicator(name));
+}
+
+// ── DOM 走査 ─────────────────────────────────────────────────────────────────
+
+/** @param {Node} root */
+function walkAndProcess(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const tag = node.parentElement?.tagName;
+      if (tag === "SCRIPT" || tag === "STYLE") return NodeFilter.FILTER_REJECT;
+      if (node.parentElement?.dataset.smwsBadge) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    },
+  });
+  const targets = [];
+  while (walker.nextNode()) targets.push(walker.currentNode);
+  targets.forEach(processTextNode);
+}
+
+// ── バッジの全削除 ────────────────────────────────────────────────────────────
+
+function removeAllBadges() {
+  document.querySelectorAll("[data-smws-badge]").forEach((el) => el.remove());
+}
+
+// ── 動的コンテンツ対応 ────────────────────────────────────────────────────────
+
+function observeDynamicContent() {
+  const observer = new MutationObserver((mutations) => {
+    if (!isActive()) return;
+    for (const mutation of mutations) {
+      for (const addedNode of mutation.addedNodes) {
+        if (addedNode.nodeType === Node.ELEMENT_NODE) {
+          walkAndProcess(addedNode);
         }
-    });
+      }
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+// ── 設定変更メッセージの受信 ─────────────────────────────────────────────────
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type !== "SETTINGS_UPDATED") return;
+  currentSettings = message.settings;
+  removeAllBadges();
+  if (isActive()) walkAndProcess(document.body);
+});
+
+// ── エントリポイント ──────────────────────────────────────────────────────────
+
+chrome.storage.sync.get(DEFAULT_SETTINGS, (settings) => {
+  currentSettings = settings;
+  injectStyles();
+  ensureTooltipSingleton();
+  if (isActive()) walkAndProcess(document.body);
+  observeDynamicContent();
 });
