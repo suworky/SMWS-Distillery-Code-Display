@@ -4,34 +4,18 @@
  * ページ内のSMWSボトルコード（例: 29.273, G1.12, B3.4）を検出し、
  * 蒸留所名をインラインバッジまたはホバーツールチップとして表示する。
  *
- * 対応サイト: smwsjapan.com / smws.com / smwsamerica.com
+ * 対応サイト: smwsjapan.com
  */
 
 // ── 定数 ────────────────────────────────────────────────────────────────────
 
 const BOTTLE_CODE_PATTERN = /(?:^|\s)(([BbGg]\d{1,2}|\d{1,3})[.．]\d+)(?:\s|$)/;
 const BADGE_CLASS = "smws-distillery-badge";
+// style 要素用の固有ID（クラス名と混同しない）
+const STYLE_ELEMENT_ID = "smws-distillery-style";
 
 const SITE_KEY_MAP = {
-  "smws.com":          "uk",
-  "smws.eu":           "eu",
-  "smwsa.com":         "usa",
-  "smws.ca":           "canada",
-  "smws.com.au":       "australia",
-  "smws.co.nz":        "nz",
-  "smws.ch":           "switzerland",
-  "smws.dk":           "denmark",
-  "smwssg.com":        "singapore",
-  "smws.com.tw":       "taiwan",
-  "smwskr.com":        "korea",
-  "smwsmalaysia.com":  "malaysia",
-  "smws.ph":           "philippines",
-  "th.smws.com":       "thailand",
-  "smws.co.za":        "southafrica",
-  "smws.mx":           "mexico",
-  "smws.vn":           "vietnam",
-  "smwsjapan.com":     "japan",
-  "shop.smwsjapan.com":"japan",
+  "smwsjapan.com": "japan",
 };
 
 const DEFAULT_SETTINGS = {
@@ -65,9 +49,9 @@ function isActive() {
 // ── スタイル注入 ──────────────────────────────────────────────────────────────
 
 function injectStyles() {
-  if (document.getElementById(BADGE_CLASS)) return;
+  if (document.getElementById(STYLE_ELEMENT_ID)) return;
   const style = document.createElement("style");
-  style.id = BADGE_CLASS;
+  style.id = STYLE_ELEMENT_ID;
   style.textContent = `
     /* ── インラインバッジ ── */
     .${BADGE_CLASS} {
@@ -92,7 +76,7 @@ function injectStyles() {
       position: relative;
       margin-left: 4px;
       vertical-align: middle;
-      --hover-opacity: 1; /* :root のCSS変数をこの要素以下で再定義して継承を遮断 */
+      --hover-opacity: 1;
     }
     .${BADGE_CLASS}--tooltip-icon {
       display: inline-block;
@@ -108,7 +92,6 @@ function injectStyles() {
       font-family: sans-serif;
       cursor: default;
     }
-    /* ツールチップ本体は JS で body 直下に固定配置するため CSS では非表示のみ定義 */
     #smws-tooltip-singleton {
       position: fixed;
       display: none;
@@ -146,8 +129,6 @@ function resolveDistilleryName(rawCode) {
   return currentSettings.language === "ja" ? entry.ja : entry.en;
 }
 
-// ── バッジ / ツールチップ生成 ─────────────────────────────────────────────────
-
 // ── グローバルツールチップ（body直下に1つだけ・fixed配置） ─────────────────────
 
 function ensureTooltipSingleton() {
@@ -163,8 +144,6 @@ function showTooltip(name, icon) {
   if (!tip) return;
   tip.textContent = name;
   tip.style.display = "block";
-
-  // アイコンの中央上に配置
   const rect = icon.getBoundingClientRect();
   const tipW = tip.offsetWidth;
   tip.style.left = `${rect.left + rect.width / 2 - tipW / 2}px`;
@@ -193,7 +172,6 @@ function createIndicator(name) {
     return wrap;
   }
 
-  // バッジ（デフォルト）
   const badge = document.createElement("span");
   badge.className = BADGE_CLASS;
   badge.dataset.smwsBadge = "1";
@@ -203,29 +181,20 @@ function createIndicator(name) {
 
 // ── テキストノード処理 ────────────────────────────────────────────────────────
 
-/**
- * バッジの挿入先となる要素と挿入位置を返す。
- * テキストの親が <a> の場合は <a> の外側（後）に挿入する。
- * それ以外はテキストノードの直後に挿入する。
- *
- * @param {Text} textNode
- * @returns {{ target: Node, isBefore: boolean }}
- *   target: insertAfter の対象ノード
- */
 function resolveInsertionPoint(textNode) {
   let node = textNode.parentElement;
-  // <a> タグを祖先に持つ場合、その <a> の直後を挿入先にする
   while (node && node !== document.body) {
     if (node.tagName === "A") return { target: node };
     node = node.parentElement;
   }
-  // <a> 以外はテキストノードの直後
   return { target: textNode };
 }
 
 /** @param {Text} textNode */
 function processTextNode(textNode) {
   const text = textNode.textContent ?? "";
+  // 軽微な最適化: ドットが含まれないテキストは蒸留所コードでない可能性が高い
+  if (!text.includes('.') && !text.includes('．')) return;
   const match = text.match(BOTTLE_CODE_PATTERN);
   if (!match) return;
 
@@ -237,7 +206,6 @@ function processTextNode(textNode) {
 
   const { target } = resolveInsertionPoint(textNode);
 
-  // 挿入先の直後に既にバッジがあれば二重挿入しない
   if (target.nextSibling?.dataset?.smwsBadge) return;
 
   target.after(createIndicator(name));
@@ -282,11 +250,14 @@ function observeDynamicContent() {
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-// ── 設定変更メッセージの受信 ─────────────────────────────────────────────────
+// ── 設定変更の監視（chrome.storage.onChanged） ────────────────────────────────
 
-chrome.runtime.onMessage.addListener((message) => {
-  if (message.type !== "SETTINGS_UPDATED") return;
-  currentSettings = message.settings;
+chrome.storage.onChanged.addListener((changes) => {
+  const updated = {};
+  for (const key in changes) {
+    updated[key] = changes[key].newValue;
+  }
+  currentSettings = { ...currentSettings, ...updated };
   removeAllBadges();
   if (isActive()) walkAndProcess(document.body);
 });
