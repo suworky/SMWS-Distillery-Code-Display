@@ -2,7 +2,6 @@
  * popup.js
  * ポップアップUIのロジック。
  * - 設定を chrome.storage.sync に保存
- * - 変更時は content script に通知
  * - UIの表示言語（日本語 / English）を切り替え
  */
 
@@ -10,6 +9,7 @@
 
 const I18N = {
   ja: {
+    title:             "SMWS 蒸留所コード表示",
     subtitle:          "蒸留所コードを蒸留所名に変換",
     masterLabel:       "拡張機能を有効にする",
     masterSub:         "全サイトへの適用をまとめて切り替え",
@@ -23,6 +23,7 @@ const I18N = {
     sitesLabel:        "対応サイト",
   },
   en: {
+    title:             "SMWS Distillery Code Display",
     subtitle:          "Show distillery names for bottle codes",
     masterLabel:       "Enable extension",
     masterSub:         "Toggle all sites at once",
@@ -90,7 +91,7 @@ function applyToUI(settings) {
   siteJapan.checked = settings.sites.japan;
 }
 
-// ── 設定の保存・通知 ──────────────────────────────────────────────────────────
+// ── 設定の保存 ────────────────────────────────────────────────────────────────
 
 function saveSettings() {
   const settings = {
@@ -104,15 +105,6 @@ function saveSettings() {
   };
 
   chrome.storage.sync.set(settings);
-
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (!tabs[0]?.id) return;
-    chrome.tabs.sendMessage(
-      tabs[0].id,
-      { type: "SETTINGS_UPDATED", settings },
-      () => void chrome.runtime.lastError
-    );
-  });
 }
 
 // ── 補助 ─────────────────────────────────────────────────────────────────────
