@@ -1,13 +1,59 @@
-# SMWS-Distillery-Code-Display
-Chrome extension that displays the distillery name of The Scotch Malt Whiskey Society Online Shop.
+# SMWS Distillery Code Display
 
-## Description
-[ザ・スコッチモルトウイスキー・ソサエティオンラインショップ](https://shop.smwsjapan.com/)の蒸留所名を表示するChrome拡張機能です。本Chrome拡張機能をインストールした状態でザ・スコッチモルトウイスキー・ソサエティオンラインショップを表示すると蒸留所コードの下部に蒸留所名が表示されるようになります。
+### 概要
 
-## Usage
-1. srcディレクトリをダウンロード
-2. Google Chromeにて`chrome://extensions/`を開く
-3. 右上の`デベロッパーモード`をオンにする
-4. 画面上部の`パッケージ化されていない拡張機能を読み込む`を選択
-5. ダウンロードしたsrcディレクトリを指定
-6. [ザ・スコッチモルトウイスキー・ソサエティオンラインショップ](https://shop.smwsjapan.com/)にアクセス！
+[ザ・スコッチモルトウイスキー・ソサエティ オンラインショップ](https://shop.smwsjapan.com/)にアクセスすると、ボトルコード（例: `29.273`、`G1.12`、`B3.4`）の横に蒸留所名を自動表示するChrome拡張機能です。
+
+### インストール
+
+Chromeウェブストアからインストールできます。
+
+[SMWS Distillery Code Display - Chrome ウェブストア](https://chromewebstore.google.com/detail/smws-distillery-code-disp/nmiibieohccpjhkkmhomkcfjlnfohdkd)
+
+### 主な機能
+
+- SMWSのボトルコードを自動検出し、対応する蒸留所名を表示
+- 表示言語を **英語 / 日本語** で切り替え可能
+- 表示スタイルを **インラインバッジ / ホバーツールチップ** で切り替え可能
+- 拡張機能の有効 / 無効をワンクリックで切り替え可能
+- 対応コード体系：シングルモルト（数字）、グレーンウイスキー（`G` + 数字）、バーボン / アメリカンウイスキー（`B` + 数字）
+
+### バージョン履歴
+
+| バージョン | 内容 |
+|---|---|
+| v1.0 | Chromeウェブストア公開（SMWSJapan対応） |
+
+### クレジット
+
+拡張機能のアイコンは [いらすとや](https://www.irasutoya.com/) の画像を使用しています。
+
+---
+
+### Overview
+
+A Chrome extension that automatically displays distillery names alongside SMWS bottle codes (e.g. `29.273`, `G1.12`, `B3.4`) on the [Scotch Malt Whisky Society Online Shop](https://shop.smwsjapan.com/).
+
+### Installation
+
+Install from the Chrome Web Store:
+
+[SMWS Distillery Code Display - Chrome Web Store](https://chromewebstore.google.com/detail/smws-distillery-code-disp/nmiibieohccpjhkkmhomkcfjlnfohdkd)
+
+### Features
+
+- Automatically detects SMWS bottle codes and displays the corresponding distillery name
+- Switch display language between **English** and **Japanese**
+- Switch display style between **inline badge** and **hover tooltip**
+- Enable / disable the extension with a single click
+- Supports code formats: Single Malt (numeric), Grain Whisky (`G` + number), Bourbon / American Whisky (`B` + number)
+
+### Version History
+
+| Version | Notes |
+|---|---|
+| v1.0 | Initial release on Chrome Web Store (SMWS Japan support) |
+
+### Credits
+
+The extension icon uses artwork from [irasutoya](https://www.irasutoya.com/).
