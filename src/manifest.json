@@ -20,7 +20,9 @@
   "content_scripts": [
     {
       "matches": [
-        "https://smwsjapan.com/*"
+        "https://smwsjapan.com/*",
+        "https://smws.com/*",
+        "https://smwsa.com/*"
       ],
       "js": ["distilleries.js", "content.js"],
       "run_at": "document_idle"
