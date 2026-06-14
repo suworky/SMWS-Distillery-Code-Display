@@ -9,7 +9,7 @@
 
 const I18N = {
   ja: {
-    title:             "SMWS 蒸留所コード表示",
+    title:             "SMWS Distillery Code Display",
     subtitle:          "蒸留所コードを蒸留所名に変換",
     masterLabel:       "拡張機能を有効にする",
     masterSub:         "全サイトへの適用をまとめて切り替え",
@@ -47,6 +47,8 @@ const DEFAULT_SETTINGS = {
   displayStyle: "badge",
   sites: {
     japan: true,
+    uk:    true,
+    usa:   true,
   },
 };
 
@@ -61,6 +63,8 @@ const styleRadios   = document.querySelectorAll("input[name='displayStyle']");
 const optBadge      = document.getElementById("opt-badge");
 const optTooltip    = document.getElementById("opt-tooltip");
 const siteJapan     = document.getElementById("siteJapan");
+const siteUk        = document.getElementById("siteUk");
+const siteUsa       = document.getElementById("siteUsa");
 
 // ── i18n 適用 ─────────────────────────────────────────────────────────────────
 
@@ -89,6 +93,8 @@ function applyToUI(settings) {
   optBadge.classList.toggle("active",   settings.displayStyle === "badge");
   optTooltip.classList.toggle("active", settings.displayStyle === "tooltip");
   siteJapan.checked = settings.sites.japan;
+  siteUk.checked    = settings.sites.uk;
+  siteUsa.checked   = settings.sites.usa;
 }
 
 // ── 設定の保存 ────────────────────────────────────────────────────────────────
@@ -101,6 +107,8 @@ function saveSettings() {
     displayStyle: [...styleRadios].find((r) => r.checked)?.value ?? "badge",
     sites: {
       japan: siteJapan.checked,
+      uk:    siteUk.checked,
+      usa:   siteUsa.checked,
     },
   };
 
@@ -144,6 +152,8 @@ styleRadios.forEach((radio) => {
 });
 
 siteJapan.addEventListener("change", saveSettings);
+siteUk.addEventListener("change", saveSettings);
+siteUsa.addEventListener("change", saveSettings);
 
 // ── 初期ロード ────────────────────────────────────────────────────────────────
 

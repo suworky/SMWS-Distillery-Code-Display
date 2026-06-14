@@ -23,6 +23,7 @@ Chromeウェブストアからインストールできます。
 | バージョン | 内容 |
 |---|---|
 | v1.0 | Chromeウェブストア公開（SMWSJapan対応） |
+| v1.1 | SMWS UK、SMWS USA対応 |
 
 ### クレジット
 
@@ -53,6 +54,7 @@ Install from the Chrome Web Store:
 | Version | Notes |
 |---|---|
 | v1.0 | Initial release on Chrome Web Store (SMWS Japan support) |
+| v1.1 | Support for SMWS UK and SMWS USA |
 
 ### Credits
 

@@ -1,7 +1,7 @@
 {
   "name": "SMWS Distillery Code Display",
   "description": "Displays distillery names for SMWS bottle codes on SMWS websites. / SMWSの蒸留所コードに蒸留所名を表示します。",
-  "version": "1.0",
+  "version": "1.1",
   "manifest_version": 3,
   "icons": {
     "16": "icons/icon16.png",
@@ -20,7 +20,9 @@
   "content_scripts": [
     {
       "matches": [
-        "https://smwsjapan.com/*"
+        "https://smwsjapan.com/*",
+        "https://smws.com/*",
+        "https://smwsa.com/*"
       ],
       "js": ["distilleries.js", "content.js"],
       "run_at": "document_idle"

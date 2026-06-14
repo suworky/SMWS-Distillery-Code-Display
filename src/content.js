@@ -4,27 +4,32 @@
  * ページ内のSMWSボトルコード（例: 29.273, G1.12, B3.4）を検出し、
  * 蒸留所名をインラインバッジまたはホバーツールチップとして表示する。
  *
- * 対応サイト: smwsjapan.com
+ * 対応サイト: smwsjapan.com, smws.com, smwsa.com
  */
 
 // ── 定数 ────────────────────────────────────────────────────────────────────
 
-const BOTTLE_CODE_PATTERN = /(?:^|\s)(([BbGg]\d{1,2}|\d{1,3})[.．]\d+)(?:\s|$)/;
+const BOTTLE_CODE_PATTERN =
+  /(?:^|[\s\u00A0])(([BbGg]\d{1,2}|\d{1,3})[.．]\d+)(?:[\s\u00A0]|$)/;
 const BADGE_CLASS = "smws-distillery-badge";
 // style 要素用の固有ID（クラス名と混同しない）
 const STYLE_ELEMENT_ID = "smws-distillery-style";
 
 const SITE_KEY_MAP = {
   "smwsjapan.com": "japan",
+  "smws.com": "uk",
+  "smwsa.com": "usa",
 };
 
 const DEFAULT_SETTINGS = {
-  enabled:      true,
-  uiLang:       "ja",
-  language:     "en",
+  enabled: true,
+  uiLang: "ja",
+  language: "en",
   displayStyle: "badge",
   sites: {
     japan: true,
+    uk: true,
+    usa: true,
   },
 };
 
@@ -58,12 +63,12 @@ function injectStyles() {
       display: inline-block;
       background: #dbeafe;
       color: #1e40af;
-      font-size: 0.75em;
+      font-size: 0.70em;
       font-weight: 600;
-      padding: 1px 7px;
-      border-radius: 99px;
-      margin-left: 5px;
-      vertical-align: middle;
+      padding: 0.5px 7px;
+      border-radius: 100px;
+      margin: 4px 3px;
+      vertical-align: 4px;
       white-space: nowrap;
       font-family: sans-serif;
       line-height: 1.6;
@@ -75,7 +80,7 @@ function injectStyles() {
       display: inline-block;
       position: relative;
       margin-left: 4px;
-      vertical-align: middle;
+      vertical-align: 3px;
       --hover-opacity: 1;
     }
     .${BADGE_CLASS}--tooltip-icon {
@@ -123,7 +128,9 @@ function injectStyles() {
 
 /** @param {string} rawCode @returns {string | null} */
 function resolveDistilleryName(rawCode) {
-  const normalized = rawCode.trim().replace(/^([bgBG])/, (c) => c.toUpperCase());
+  const normalized = rawCode
+    .trim()
+    .replace(/^([bgBG])/, (c) => c.toUpperCase());
   const entry = DISTILLERIES[normalized];
   if (!entry) return null;
   return currentSettings.language === "ja" ? entry.ja : entry.en;
@@ -147,7 +154,7 @@ function showTooltip(name, icon) {
   const rect = icon.getBoundingClientRect();
   const tipW = tip.offsetWidth;
   tip.style.left = `${rect.left + rect.width / 2 - tipW / 2}px`;
-  tip.style.top  = `${rect.top - tip.offsetHeight - 8}px`;
+  tip.style.top = `${rect.top - tip.offsetHeight - 8}px`;
 }
 
 function hideTooltip() {
@@ -181,21 +188,24 @@ function createIndicator(name) {
 
 // ── テキストノード処理 ────────────────────────────────────────────────────────
 
-function resolveInsertionPoint(textNode) {
-  let node = textNode.parentElement;
-  while (node && node !== document.body) {
-    if (node.tagName === "A") return { target: node };
-    node = node.parentElement;
-  }
-  return { target: textNode };
-}
+// テキストノード全体がボトルコードそのものである場合のパターン（UKサイト対応）
+const BOTTLE_CODE_EXACT_PATTERN = /^([BbGg]\d{1,2}|\d{1,3})[.．]\d+$/;
 
 /** @param {Text} textNode */
 function processTextNode(textNode) {
-  const text = textNode.textContent ?? "";
+  const text = (textNode.textContent ?? "").replace(
+    /^[\s\u00A0]+|[\s\u00A0]+$/g,
+    "",
+  );
   // 軽微な最適化: ドットが含まれないテキストは蒸留所コードでない可能性が高い
-  if (!text.includes('.') && !text.includes('．')) return;
-  const match = text.match(BOTTLE_CODE_PATTERN);
+  if (!text.includes(".") && !text.includes("．")) return;
+
+  // テキストノード全体がコードそのもの（例: "3.364"）の場合と
+  // コードが前後のテキストに含まれる場合の両方に対応する
+  const exactMatch = text.match(BOTTLE_CODE_EXACT_PATTERN);
+  const match = exactMatch
+    ? [null, text, text.split(/[.．]/)[0]]
+    : text.match(BOTTLE_CODE_PATTERN);
   if (!match) return;
 
   const name = resolveDistilleryName(match[2]);
@@ -204,11 +214,9 @@ function processTextNode(textNode) {
   const parent = textNode.parentElement;
   if (!parent) return;
 
-  const { target } = resolveInsertionPoint(textNode);
+  if (textNode.nextSibling?.dataset?.smwsBadge) return;
 
-  if (target.nextSibling?.dataset?.smwsBadge) return;
-
-  target.after(createIndicator(name));
+  textNode.after(createIndicator(name));
 }
 
 // ── DOM 走査 ─────────────────────────────────────────────────────────────────
@@ -219,7 +227,8 @@ function walkAndProcess(root) {
     acceptNode(node) {
       const tag = node.parentElement?.tagName;
       if (tag === "SCRIPT" || tag === "STYLE") return NodeFilter.FILTER_REJECT;
-      if (node.parentElement?.dataset.smwsBadge) return NodeFilter.FILTER_REJECT;
+      if (node.parentElement?.dataset.smwsBadge)
+        return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     },
   });
@@ -240,14 +249,34 @@ function observeDynamicContent() {
   const observer = new MutationObserver((mutations) => {
     if (!isActive()) return;
     for (const mutation of mutations) {
+      // ノード追加
       for (const addedNode of mutation.addedNodes) {
         if (addedNode.nodeType === Node.ELEMENT_NODE) {
           walkAndProcess(addedNode);
         }
       }
+      // .value の子ノード変化（BigCommerceがコードを流し込んだタイミング）
+      if (
+        mutation.type === "childList" &&
+        mutation.target.nodeType === Node.ELEMENT_NODE &&
+        mutation.target.classList.contains("value")
+      ) {
+        walkAndProcess(mutation.target);
+      }
+      // .value のテキストノード書き換え
+      if (
+        mutation.type === "characterData" &&
+        mutation.target.parentElement?.classList.contains("value")
+      ) {
+        processTextNode(mutation.target);
+      }
     }
   });
-  observer.observe(document.body, { childList: true, subtree: true });
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
 }
 
 // ── 設定変更の監視（chrome.storage.onChanged） ────────────────────────────────

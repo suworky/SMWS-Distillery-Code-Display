@@ -34,8 +34,9 @@ main
 
 1. `main` から新しいブランチを作成する
 2. 変更をコミットする（コミットメッセージのルールは後述）
-3. `main` へ Pull Request を作成する
-4. レビュー後にマージする
+3. Google Web Store Storeに申請
+4. 承認後、`main` へ Pull Request を作成する
+5. レビュー後にマージする
 
 ```bash
 # 例: 機能追加の場合
