@@ -1,6 +1,6 @@
 {
   "name": "SMWS Distillery Code Display",
-  "description": "SMWSの蒸留所コードを蒸留所名に変換して表示する拡張機能です。対応サイトは、smwsjapan.com、smws.com、smwsa.comです。 / This extension converts SMWS distillery codes to distillery names and displays them. Supported sites are smwsjapan.com, smws.com, smwsa.com.",
+  "description": "SMWS各サイトの蒸留所コードを蒸留所名に変換表示します（Japan/UK/USA対応） / Converts distillery codes to names on all SMWS sites (JP/UK/USA)",
   "version": "1.2.0",
   "manifest_version": 3,
   "icons": {
