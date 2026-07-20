@@ -1,7 +1,7 @@
 /**
  * SMWS Distillery Code Display - content script
  *
- * ページ内のSMWSボトルコード（例: 29.273, G1.12, B3.4）を検出し、
+ * ページ内のSMWSボトルコード（例: 29.273, G1.12, B3.4, RW1.7, GN1.16）を検出し、
  * 蒸留所名をインラインバッジまたはホバーツールチップとして表示する。
  *
  * 対応サイト: smwsjapan.com, smws.com, smwsa.com
@@ -10,7 +10,7 @@
 // ── 定数 ────────────────────────────────────────────────────────────────────
 
 const BOTTLE_CODE_PATTERN =
-  /(?:^|[\s\u00A0])(([BbGg]\d{1,2}|\d{1,3})[.．]\d+)(?:[\s\u00A0]|$)/;
+  /(?:^|[\s\u00A0])(((?:[GgCcRr][WwNn]|[A-Za-z])\d{1,2}|\d{1,3})[.．]\d+)(?:[\s\u00A0]|$)/;
 const BADGE_CLASS = "smws-distillery-badge";
 // style 要素用の固有ID（クラス名と混同しない）
 const STYLE_ELEMENT_ID = "smws-distillery-style";
@@ -130,7 +130,7 @@ function injectStyles() {
 function resolveDistilleryName(rawCode) {
   const normalized = rawCode
     .trim()
-    .replace(/^([bgBG])/, (c) => c.toUpperCase());
+    .replace(/^([A-Za-z]+)/, (s) => s.toUpperCase());
   const entry = DISTILLERIES[normalized];
   if (!entry) return null;
   return currentSettings.language === "ja" ? entry.ja : entry.en;
@@ -189,7 +189,8 @@ function createIndicator(name) {
 // ── テキストノード処理 ────────────────────────────────────────────────────────
 
 // テキストノード全体がボトルコードそのものである場合のパターン（UKサイト対応）
-const BOTTLE_CODE_EXACT_PATTERN = /^([BbGg]\d{1,2}|\d{1,3})[.．]\d+$/;
+const BOTTLE_CODE_EXACT_PATTERN =
+  /^((?:[GgCcRr][WwNn]|[A-Za-z])\d{1,2}|\d{1,3})[.．]\d+$/;
 
 /** @param {Text} textNode */
 function processTextNode(textNode) {

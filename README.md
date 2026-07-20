@@ -2,7 +2,7 @@
 
 ### 概要
 
-[ザ・スコッチモルトウイスキー・ソサエティ オンラインショップ](https://shop.smwsjapan.com/)にアクセスすると、ボトルコード（例: `29.273`、`G1.12`、`B3.4`）の横に蒸留所名を自動表示するChrome拡張機能です。
+[ザ・スコッチモルトウイスキー・ソサエティ](https://smwsjapan.com/)（[Japan](https://smwsjapan.com/) / [UK](https://smws.com/) / [USA](https://smwsa.com/)）のオンラインショップにアクセスすると、ボトルコード（例: `29.273`、`G1.12`、`B3.4`、`RW1.7`、`GN1.16`）の横に蒸留所名を自動表示するChrome拡張機能です。
 
 ### インストール
 
@@ -24,6 +24,7 @@ Chromeウェブストアからインストールできます。
 |---|---|
 | v1.0 | Chromeウェブストア公開（SMWSJapan対応） |
 | v1.1 | SMWS UK、SMWS USA対応 |
+| v1.2.0 | 蒸留所コード拡充（166–168、B9追加）、RW・CW・R・A・C・GN プレフィックス新規対応 |
 
 ### クレジット
 
@@ -33,7 +34,7 @@ Chromeウェブストアからインストールできます。
 
 ### Overview
 
-A Chrome extension that automatically displays distillery names alongside SMWS bottle codes (e.g. `29.273`, `G1.12`, `B3.4`) on the [Scotch Malt Whisky Society Online Shop](https://shop.smwsjapan.com/).
+A Chrome extension that automatically displays distillery names alongside SMWS bottle codes (e.g. `29.273`, `G1.12`, `B3.4`, `RW1.7`, `GN1.16`) on the Scotch Malt Whisky Society Online Shop ([Japan](https://smwsjapan.com/) / [UK](https://smws.com/) / [USA](https://smwsa.com/)).
 
 ### Installation
 
@@ -55,6 +56,7 @@ Install from the Chrome Web Store:
 |---|---|
 | v1.0 | Initial release on Chrome Web Store (SMWS Japan support) |
 | v1.1 | Support for SMWS UK and SMWS USA |
+| v1.2.0 | Extended distillery codes (added 166–168, B9); added new prefixes RW, CW, R, A, C, GN |
 
 ### Credits
 
