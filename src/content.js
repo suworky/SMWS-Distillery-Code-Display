@@ -4,7 +4,7 @@
  * ページ内のSMWSボトルコード（例: 29.273, G1.12, B3.4, RW1.7, GN1.16）を検出し、
  * 蒸留所名をインラインバッジまたはホバーツールチップとして表示する。
  *
- * 対応サイト: smwsjapan.com, smws.com, smwsa.com
+ * 対応サイト: smwsjapan.com, smws.com, smwsa.com, smws.eu
  */
 
 // ── 定数 ────────────────────────────────────────────────────────────────────
@@ -19,6 +19,7 @@ const SITE_KEY_MAP = {
   "smwsjapan.com": "japan",
   "smws.com": "uk",
   "smwsa.com": "usa",
+  "smws.eu": "eu",
 };
 
 const DEFAULT_SETTINGS = {
@@ -30,6 +31,7 @@ const DEFAULT_SETTINGS = {
     japan: true,
     uk: true,
     usa: true,
+    eu: true,
   },
 };
 
