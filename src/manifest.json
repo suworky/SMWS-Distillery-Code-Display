@@ -1,7 +1,7 @@
 {
   "name": "SMWS Distillery Code Display",
-  "description": "SMWS各サイトの蒸留所コードを蒸留所名に変換表示します（Japan/UK/USA対応） / Converts distillery codes to names on all SMWS sites (JP/UK/USA)",
-  "version": "1.2.0",
+  "description": "SMWS各サイトの蒸留所コードを蒸留所名に変換表示します（Japan/UK/USA/EU対応） / Converts distillery codes to names on all SMWS sites (JP/UK/USA/EU)",
+  "version": "1.3.0",
   "manifest_version": 3,
   "icons": {
     "16": "icons/icon16.png",
@@ -22,7 +22,8 @@
       "matches": [
         "https://smwsjapan.com/*",
         "https://smws.com/*",
-        "https://smwsa.com/*"
+        "https://smwsa.com/*",
+        "https://smws.eu/*"
       ],
       "js": ["distilleries.js", "content.js"],
       "run_at": "document_idle"

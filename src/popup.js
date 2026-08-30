@@ -49,6 +49,7 @@ const DEFAULT_SETTINGS = {
     japan: true,
     uk:    true,
     usa:   true,
+    eu:    true,
   },
 };
 
@@ -65,6 +66,7 @@ const optTooltip    = document.getElementById("opt-tooltip");
 const siteJapan     = document.getElementById("siteJapan");
 const siteUk        = document.getElementById("siteUk");
 const siteUsa       = document.getElementById("siteUsa");
+const siteEu        = document.getElementById("siteEu");
 
 // ── i18n 適用 ─────────────────────────────────────────────────────────────────
 
@@ -95,6 +97,7 @@ function applyToUI(settings) {
   siteJapan.checked = settings.sites.japan;
   siteUk.checked    = settings.sites.uk;
   siteUsa.checked   = settings.sites.usa;
+  siteEu.checked    = settings.sites.eu;
 }
 
 // ── 設定の保存 ────────────────────────────────────────────────────────────────
@@ -109,6 +112,7 @@ function saveSettings() {
       japan: siteJapan.checked,
       uk:    siteUk.checked,
       usa:   siteUsa.checked,
+      eu:    siteEu.checked,
     },
   };
 
@@ -154,6 +158,7 @@ styleRadios.forEach((radio) => {
 siteJapan.addEventListener("change", saveSettings);
 siteUk.addEventListener("change", saveSettings);
 siteUsa.addEventListener("change", saveSettings);
+siteEu.addEventListener("change", saveSettings);
 
 // ── 初期ロード ────────────────────────────────────────────────────────────────
 
